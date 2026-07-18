@@ -1,0 +1,160 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Control de encuestas y estadisticas</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="refrescarDatos()">Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Stats Generales -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <h3>Total Encuestas</h3>
+      <p class="stat-number">{{ estadisticas.total }}</p>
+    </div>
+    <div class="stat-card respondidas">
+      <h3>Respondidas</h3>
+      <p class="stat-number">{{ estadisticas.respondidas }}</p>
+    </div>
+    <div class="stat-card pendientes">
+      <h3>Pendientes</h3>
+      <p class="stat-number">{{ estadisticas.enviadas }}</p>
+    </div>
+    <div class="stat-card tasa">
+      <h3>Tasa Respuesta</h3>
+      <p class="stat-number">{{ estadisticas.tasaRespuesta.toFixed(0) }}%</p>
+    </div>
+  </div>
+
+  <!-- Stats por Marca -->
+  <div class="marcas-stats">
+    <h2 class="marcas-title">Estadisticas por Marca</h2>
+    <div class="marcas-grid">
+      <div *ngFor="let marca of marcas" class="marca-stat-card">
+        <!-- Logo de la marca -->
+        <div class="marca-logo">
+          <img 
+            [src]="'assets/logos/' + obtenerLogo(marca.id)" 
+            [alt]="marca.nombre"
+            class="marca-logo-img"
+            onerror="this.src='assets/logos/default.svg'; this.onerror=null;"
+          >
+          <span class="marca-nombre">{{ marca.nombre }}</span>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="marca-stats-detalle">
+          <div class="stat-item">
+            <span class="stat-label">Total</span>
+            <span class="stat-value">{{ getTotalPorMarca(marca.id) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Respondidas</span>
+            <span class="stat-value respondidas">{{ getRespondidasPorMarca(marca.id) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Pendientes</span>
+            <span class="stat-value pendientes">{{ getPendientesPorMarca(marca.id) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Promedio</span>
+            <span class="stat-value promedio">{{ getPromedioPorMarca(marca.id).toFixed(1) }}</span>
+          </div>
+        </div>
+        
+        <!-- Barra de porcentaje -->
+        <div class="marca-bar">
+          <div class="barra" [style.width.%]="getTasaPorMarca(marca.id)"></div>
+          <span class="barra-label">{{ getTasaPorMarca(marca.id).toFixed(0) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Encuestas Recientes -->
+  <div class="encuestas-recientes">
+    <h2 class="marcas-title">Ultimas Encuestas</h2>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Marca</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Calificacion</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ✅ Usar encuestasRecientes en lugar de encuestas -->
+          <tr *ngFor="let encuesta of encuestasRecientes">
+            <td>
+              <div class="cliente-info">
+                <strong>{{ encuesta.clienteNombre }}</strong>
+                <span>{{ encuesta.clienteEmail }}</span>
+              </div>
+            </td>
+            <td>{{ encuesta.marcaNombre }}</td>
+            <td>
+              <span class="badge" [class]="getEstadoClass(encuesta.estado)">
+                {{ getEstadoTexto(encuesta.estado) }}
+              </span>
+            </td>
+            <td>{{ formatFecha(encuesta.fechaEnvio) }}</td>
+            <td>
+              <span *ngIf="encuesta.estado === 'RESPONDIDA'" class="calificacion">
+                {{ getPromedioEncuesta(encuesta).toFixed(1) }}
+              </span>
+              <span *ngIf="encuesta.estado !== 'RESPONDIDA'">-</span>
+            </td>
+            <td>
+              <div class="btn-actions">
+                <button class="btn-sm btn-ver" (click)="verDetalles(encuesta)">Ver</button>
+                <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token)">Copiar</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="encuestasRecientes.length === 0">
+            <td colspan="6" class="sin-encuestas">No hay encuestas disponibles</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Detalles de la Encuesta</h3>
+      <button class="modal-close" (click)="cerrarDetalles()">X</button>
+    </div>
+    <div class="modal-body" *ngIf="encuestaSeleccionada">
+      <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
+      <div class="detail-row"><b>Email:</b> {{ encuestaSeleccionada.clienteEmail }}</div>
+      <div class="detail-row"><b>Marca:</b> {{ encuestaSeleccionada.marcaNombre }}</div>
+      <div class="detail-row"><b>Estado:</b> {{ getEstadoTexto(encuestaSeleccionada.estado) }}</div>
+      <div class="detail-row"><b>Fecha:</b> {{ formatFecha(encuestaSeleccionada.fechaEnvio) }}</div>
+      <div class="detail-row">
+        <b>Link:</b>
+        <div class="link-box">
+          <input type="text" [value]="generarLink(encuestaSeleccionada.token)" readonly>
+          <button class="btn-copy-modal" (click)="copiarLink(encuestaSeleccionada.token)">Copiar</button>
+        </div>
+      </div>
+      <div class="respuestas-box" *ngIf="encuestaSeleccionada.respuestas && encuestaSeleccionada.respuestas.length > 0">
+        <h4>Respuestas</h4>
+        <div *ngFor="let respuesta of encuestaSeleccionada.respuestas" class="respuesta-line">
+          <p><b>{{ respuesta.preguntaTexto }}</b></p>
+          <p>{{ respuesta.valorTexto || respuesta.valorNumerico || respuesta.opcionTexto || 'Sin respuesta' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

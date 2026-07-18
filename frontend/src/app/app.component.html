@@ -1,42 +1,40 @@
-<!-- Ruta pública -->
 <ng-container *ngIf="isPublicRoute()">
   <router-outlet></router-outlet>
 </ng-container>
 
-<!-- Ruta privada -->
 <ng-container *ngIf="!isPublicRoute()">
-  <nav class="navbar navbar-expand-lg shadow-sm" style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%); border-bottom: 3px solid #C62828;">
+  <nav class="navbar navbar-expand-lg shadow-sm" style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%); border-bottom: 3px solid #C62828; padding: 12px 24px;">
     <div class="container-fluid">
-      <!-- Logo -->
-      <div class="navbar-brand fw-bold d-flex align-items-center text-white" style="cursor: default;">
+      <!-- Logo Team InMotion - Solo imagen -->
+      <div class="navbar-brand" style="cursor: default; padding: 0;">
         <img 
-          src="assets/logo-team-inmotion.png" 
-          alt="InMotion" 
+          src="assets/inmo1.webp" 
+          alt="Team InMotion" 
           height="50" 
-          class="me-2"
-          style="display: block; max-height: 50px; width: auto; background: transparent;"
+          style="display: block; height: 50px; width: auto;"
+          (error)="onLogoError($event)"
         >
-              </div>
+      </div>
 
       <!-- Botón Cerrar Sesión -->
       <button class="btn btn-logout" (click)="logout()">
-           <span class="logout-text">Cerrar Sesión</span>
+        <span class="logout-icon">⏻</span>
+        <span class="logout-text">Cerrar Sesión</span>
       </button>
     </div>
   </nav>
 
-  <!-- Menú lateral + contenido -->
   <div class="d-flex">
     <div class="bg-white vh-100 p-3 shadow-sm" style="width: 220px; border-right: 1px solid #ddd;">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active fw-bold text-danger">📊 Dashboard</a>
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active fw-bold text-danger">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/crear" routerLinkActive="active fw-bold text-danger">➕ Crear Encuesta</a>
+          <a class="nav-link" routerLink="/crear" routerLinkActive="active fw-bold text-danger">Crear Encuesta</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/listar" routerLinkActive="active fw-bold text-danger">📋 Listar Encuestas</a>
+          <a class="nav-link" routerLink="/listar" routerLinkActive="active fw-bold text-danger">Listar Encuestas</a>
         </li>
       </ul>
     </div>
