@@ -1,0 +1,98 @@
+<div class="listar-encuestas-container">
+  <!-- Header -->
+  <div class="listar-header">
+    <div>
+      <h1>Listar Encuestas</h1>
+      <p>Visualice todas las encuestas generadas</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="cargarEncuestas()">Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <div class="filtros-box">
+      <input 
+        type="text" 
+        class="filtro-input"
+        placeholder="Buscar por cliente o email..." 
+        [(ngModel)]="filtroTexto"
+        (input)="filtrarEncuestas()"
+      >
+      <select class="filtro-select" [(ngModel)]="filtroMarca" (change)="filtrarEncuestas()">
+        <option value="">Todas las marcas</option>
+        <option *ngFor="let marca of marcas" [value]="marca.nombre">
+          {{ marca.nombre }}
+        </option>
+      </select>
+      <select class="filtro-select" [(ngModel)]="filtroEstado" (change)="filtrarEncuestas()">
+        <option value="">Todos los estados</option>
+        <option value="ENVIADA">Enviada</option>
+        <option value="RESPONDIDA">Respondida</option>
+        <option value="EXPIRADA">Expirada</option>
+      </select>
+      <button class="btn-clear" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="cargando">
+    <p>Cargando encuestas...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-mensaje">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading && !error" class="tabla-container">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Marca</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let encuesta of encuestasFiltradas">
+            <td>
+              <div class="cliente-info">
+                <strong>{{ encuesta.clienteNombre }}</strong>
+                <span>{{ encuesta.clienteEmail }}</span>
+              </div>
+            </td>
+            <td>{{ encuesta.marcaNombre }}</td>
+            <td>
+              <span class="badge" [class]="getEstadoClass(encuesta.estado)">
+                {{ getEstadoTexto(encuesta.estado) }}
+              </span>
+            </td>
+            <td>{{ formatFecha(encuesta.fechaEnvio) }}</td>
+            <td>
+              <div class="btn-actions">
+                <button class="btn-sm btn-ver" (click)="verDetalles(encuesta)">Ver</button>
+                <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token)">Copiar</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="encuestasFiltradas.length === 0">
+            <td colspan="5" class="sin-resultados">
+              <p>No hay encuestas disponibles</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Total -->
+    <div class="tabla-footer" *ngIf="encuestasFiltradas.length > 0">
+      <span>Total: {{ encuestasFiltradas.length }} encuestas</span>
+    </div>
+  </div>
+</div>

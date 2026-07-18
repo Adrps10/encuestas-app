@@ -1,1 +1,73 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importar Bootstrap */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Fuentes personalizadas */
+@font-face {
+  font-family: 'Avenir Next Cyr';
+  src: local('Avenir Next Cyr Medium'), local('AvenirNextCyr-Medium');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir Next Cyr';
+  src: local('Avenir Next Cyr Bold'), local('AvenirNextCyr-Bold');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir Next Cyr';
+  src: local('Avenir Next Cyr Demi'), local('AvenirNextCyr-Demi');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir Next Cyr';
+  src: local('Avenir Next Cyr Regular'), local('AvenirNextCyr-Regular');
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Avenir Next Cyr', 'Inter', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f7fa;
+  color: #1A1A1A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Avenir Next Cyr', 'Inter', 'Montserrat', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Texto */
+p, span, div, li, a, button, input, select, textarea {
+  font-family: 'Avenir Next Cyr', 'Inter', 'Montserrat', sans-serif;
+}
+
+/* Enlaces y botones con mejor peso */
+.nav-link, .btn, button {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Tablas */
+table th, table td {
+  font-family: 'Avenir Next Cyr', 'Inter', 'Montserrat', sans-serif;
+}

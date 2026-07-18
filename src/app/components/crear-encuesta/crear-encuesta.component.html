@@ -1,0 +1,100 @@
+<div class="crear-encuesta-container">
+  <div class="page-header">
+    <h1>Generar Encuesta de Satisfacción</h1>
+    <p>Complete los datos del cliente para generar el link de la encuesta</p>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-container" *ngIf="!exito">
+    <form [formGroup]="encuestaForm" (ngSubmit)="generarEncuesta()">
+      <div class="form-section">
+        <h2>Datos del Cliente</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" formControlName="nombre" placeholder="Ingrese el nombre">
+            <small *ngIf="encuestaForm.get('nombre')?.invalid && encuestaForm.get('nombre')?.touched" class="error-text">
+              El nombre es requerido
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Apellido *</label>
+            <input type="text" formControlName="apellido" placeholder="Ingrese el apellido">
+            <small *ngIf="encuestaForm.get('apellido')?.invalid && encuestaForm.get('apellido')?.touched" class="error-text">
+              El apellido es requerido
+            </small>
+          </div>
+        </div>
+
+<div class="form-row">
+  <div class="form-group">
+    <label>Email <span style="color:#999;font-weight:400;">(opcional)</span></label>
+    <input type="email" formControlName="email" placeholder="ejemplo@email.com">
+  </div>
+  <div class="form-group">
+    <label>Telefono <span class="required">*</span></label>
+    <input type="tel" formControlName="telefono" placeholder="55 1234 5678">
+    <small *ngIf="encuestaForm.get('telefono')?.invalid && encuestaForm.get('telefono')?.touched" class="error-text">
+      El telefono es obligatorio
+    </small>
+  </div>
+</div>
+
+        <div class="form-group">
+          <label>Sucursal *</label>
+          <select formControlName="marcaId">
+            <option value="">Seleccione una sucursal</option>
+            <option *ngFor="let marca of marcas" [value]="marca.id">
+              {{ marca.nombre }}
+            </option>
+          </select>
+          <small *ngIf="encuestaForm.get('marcaId')?.invalid && encuestaForm.get('marcaId')?.touched" class="error-text">
+            Seleccione una sucursal
+          </small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="resetForm()">Limpiar</button>
+        <button type="submit" class="btn-primary" [disabled]="loading || encuestaForm.invalid">
+          {{ loading ? 'Generando...' : 'Generar Encuesta' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Éxito -->
+  <div *ngIf="exito" class="success-box">
+    <div class="success-icon">✅</div>
+    <h3>Encuesta Generada Exitosamente</h3>
+    
+    <div class="success-info">
+      <div class="info-row">
+        <span>Cliente:</span>
+        <strong>{{ encuestaCreada?.clienteNombre }}</strong>
+      </div>
+      <div class="info-row">
+        <span>Sucursal:</span>
+        <strong>{{ encuestaCreada?.marcaNombre }}</strong>
+      </div>
+      <div class="info-row">
+        <span>Token:</span>
+        <code>{{ tokenGenerado }}</code>
+      </div>
+    </div>
+
+    <div class="link-container">
+      <label>Link de la encuesta:</label>
+      <div class="link-display">
+        <input type="text" [value]="linkGenerado" readonly>
+        <button class="btn-copy" (click)="copiarLink()">Copiar</button>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <button class="btn-primary" (click)="resetForm()">+ Nueva Encuesta</button>
+      <button class="btn-secondary" routerLink="/dashboard">Ver Dashboard</button>
+    </div>
+  </div>
+</div>
