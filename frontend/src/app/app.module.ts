@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,6 +11,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CrearEncuestaComponent } from './components/crear-encuesta/crear-encuesta.component';
 import { ResponderEncuestaComponent } from './components/responder-encuesta/responder-encuesta.component';
 import { ListarEncuestasComponent } from './components/listar-encuestas/listar-encuestas.component';
+import { ToastComponent } from './components/toast/toast.component';
+import { ImportarEncuestasComponent } from './components/importar-encuestas/importar-encuestas.component';
+import { ContestarEncuestaManualComponent } from './components/contestar-encuesta/contestar-encuesta-manual.component';
 import { EncuestaService } from './services/encuesta.service';
 
 @NgModule({
@@ -19,13 +23,17 @@ import { EncuestaService } from './services/encuesta.service';
     DashboardComponent,
     CrearEncuestaComponent,
     ResponderEncuestaComponent,
-    ListarEncuestasComponent
+    ListarEncuestasComponent,
+    ToastComponent,
+    ImportarEncuestasComponent,
+    ContestarEncuestaManualComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    CommonModule,
     AppRoutingModule
   ],
   providers: [EncuestaService],

@@ -10,6 +10,16 @@ export class EncuestaService {
   private apiUrl = 'http://localhost:8086/api/encuestas';
   private frontendUrl = 'http://localhost:4200';
 
+  logos: { [key: number]: string } = {
+    1: 'Toyota.png',
+    2: 'carsline.png',
+    3: 'carsline.png',
+    4: 'gwm.png',
+    5: 'subaru.webp',
+    6: 'comprocars.png',
+    7: 'comprocars.png'
+  };
+
   marcas = [
     { id: 1, nombre: 'Toyota Pachuca' },
     { id: 2, nombre: 'Carsline Pachuca' },
@@ -34,41 +44,39 @@ export class EncuestaService {
     return this.marcas;
   }
 
+  obtenerLogo(marcaId: number): string {
+    return this.logos[marcaId] || 'default.svg';
+  }
+
   obtenerPreguntas(): Pregunta[] {
     return this.preguntas;
   }
 
-  // LLAMA A TU BACKEND REAL
   listarEncuestas(): Observable<Encuesta[]> {
     return this.http.get<Encuesta[]>(`${this.apiUrl}/listar`);
   }
 
-  // LLAMA A TU BACKEND REAL
-  obtenerEstadisticasGenerales(): Observable<EstadisticasGenerales> {
-    return this.http.get<EstadisticasGenerales>(`${this.apiUrl}/estadisticas/generales`);
+  obtenerEstadisticasGenerales(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/estadisticas/generales`);
   }
 
   generarLinkEncuesta(token: string): string {
     return `${this.frontendUrl}/responder/${token}`;
   }
 
-  // LLAMA A TU BACKEND REAL
   obtenerEncuestaPorToken(token: string): Observable<Encuesta> {
     return this.http.get<Encuesta>(`${this.apiUrl}/token/${token}`);
   }
 
-  // LLAMA A TU BACKEND REAL
   crearEncuesta(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/crear`, data);
   }
 
-  // LLAMA A TU BACKEND REAL
   responderEncuesta(token: string, data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/responder/${token}`, data);
   }
 
-  private obtenerMarcaNombre(marcaId: number): string {
-    const marca = this.marcas.find(m => m.id === marcaId);
-    return marca ? marca.nombre : '';
+  eliminarEncuesta(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/eliminar/${id}`);
   }
 }

@@ -1,0 +1,152 @@
+<div class="importar-container">
+  <div class="toast-message" *ngIf="mensajeToast" [class]="'toast-' + tipoToast">
+    {{ mensajeToast }}
+  </div>
+
+  <div class="page-header">
+    <h1>Importar Datos de Clientes para Encuestas</h1>
+    <p>Cargue el archivo Excel con los clientes para generar encuestas automaticamente.</p>
+  </div>
+
+  <div class="upload-section">
+    <div class="upload-box" (dragover)="$event.preventDefault()" (drop)="onFileChange($event)">
+      <div class="upload-icon">📄</div>
+      <h3>Seleccione el archivo Excel</h3>
+      <p>El archivo debe contener las columnas: FECHA, NOMBRE CLIENTE, ASESOR, TELEFONO, UNIDAD,MARCA</p>
+      <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput>
+    </div>
+
+    <div *ngIf="archivoSeleccionado" class="file-info">
+      <span class="file-name">{{ archivoSeleccionado.name }}</span>
+      <span class="file-size">{{ (archivoSeleccionado.size / 1024).toFixed(2) }} KB</span>
+      <button class="btn-remove" (click)="limpiar()">✕</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Procesando archivo...</p>
+  </div>
+
+  <div *ngIf="mostrarResultados && !loading" class="results-section">
+    <div class="results-header">
+      <h3>Clientes encontrados</h3>
+      <span class="total-count">Total: {{ totalRegistros }}</span>
+      <div class="results-actions">
+        <button class="btn-generate" (click)="generarEncuestas()" [disabled]="procesando || totalRegistros === 0">
+          {{ procesando ? 'Generando...' : 'Generar Encuestas' }}
+        </button>
+        <button class="btn-secondary" (click)="limpiar()">Limpiar</button>
+      </div>
+    </div>
+
+    <div *ngIf="mostrarResultados && !procesando && totalRegistros > 0" class="plantilla-selector">
+      <h4>Selecciona el tipo de plantilla:</h4>
+      <div class="selector-buttons">
+        <button 
+          class="btn-plantilla" 
+          [class.active]="tipoPlantilla === 'POSTVENTA'"
+          (click)="cambiarPlantilla('POSTVENTA')">
+          Post Venta
+        </button>
+        <button 
+          class="btn-plantilla" 
+          [class.active]="tipoPlantilla === 'VENTA'"
+          (click)="cambiarPlantilla('VENTA')">
+          Venta
+        </button>
+      </div>
+      <p class="plantilla-info">Plantilla actual: <strong>{{ tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta' }}</strong></p>
+    </div>
+
+    <div *ngIf="procesando" class="progress-status">
+      <span>Procesando: {{ (exitosos + fallidos) }} / {{ totalRegistros }}</span>
+      <span>Exitosos: {{ exitosos }} | Fallidos: {{ fallidos }}</span>
+      <span>Plantilla: {{ tipoPlantilla === 'VENTA' ? 'Venta' : 'Post Venta' }}</span>
+    </div>
+
+    <div class="table-responsive" *ngIf="datosExcel.length > 0">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Telefono</th>
+            <th>Asesor</th>
+            <th>Unidad</th>
+            <th>Marca</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of datosExcel">
+            <td>{{ cliente.index }}</td>
+            <td><strong>{{ cliente.nombreCliente }}</strong></td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.asesor }}</td>
+            <td>{{ cliente.unidad }}</td>
+            <td>{{ cliente.marcaNombre || 'Subaru' }}</td>
+            <td>
+              <span *ngIf="!cliente.procesado" class="badge badge-pending">Pendiente</span>
+              <span *ngIf="cliente.procesado && cliente.exito" class="badge badge-success">Exito</span>
+              <span *ngIf="cliente.procesado && !cliente.exito" class="badge badge-error">Error</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="encuestasGeneradas.length > 0" class="generated-section">
+      <h4>Encuestas Generadas</h4>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Marca</th>
+              <th>Link</th>
+              <th>Plantilla</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of encuestasGeneradas">
+              <tr>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.marca }}</td>
+                <td><code class="link-code">{{ item.link }}</code></td>
+                <td>
+                  <button class="btn-ver-plantilla" (click)="item.mostrarPlantilla = !item.mostrarPlantilla">
+                    {{ item.mostrarPlantilla ? 'Ocultar' : 'Ver' }}
+                  </button>
+                </td>
+                <td>
+                  <button class="btn-copy" (click)="copiarLink(item.token)">Copiar Link</button>
+                  <button class="btn-copy-plantilla" (click)="copiarPlantilla(item.plantilla)">Copiar Plantilla</button>
+                </td>
+              </tr>
+              <tr *ngIf="item.mostrarPlantilla">
+                <td colspan="5">
+                  <div class="plantilla-box">
+                    <textarea readonly rows="12" class="plantilla-textarea">{{ item.plantilla }}</textarea>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+      <div class="generated-actions">
+        <button class="btn-copy-all" (click)="copiarTodosLosLinks()">Copiar Todos los Links</button>
+        <button class="btn-report" (click)="descargarReporte()">Descargar Reporte</button>
+      </div>
+    </div>
+
+    <div *ngIf="errores.length > 0" class="errors-section">
+      <h4>Errores encontrados</h4>
+      <ul>
+        <li *ngFor="let error of errores">{{ error }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

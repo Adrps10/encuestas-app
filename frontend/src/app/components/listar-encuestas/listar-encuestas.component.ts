@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EncuestaService } from '../../services/encuesta.service';
 import { Encuesta } from '../../models/encuesta.model';
+import { NotificationService } from '../../services/notification.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-listar-encuestas',
@@ -24,7 +26,8 @@ export class ListarEncuestasComponent implements OnInit {
 
   constructor(
     private encuestaService: EncuestaService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {
     this.marcas = this.encuestaService.obtenerMarcas();
   }
@@ -72,22 +75,81 @@ export class ListarEncuestasComponent implements OnInit {
     this.encuestasFiltradas = this.encuestas;
   }
 
+  eliminarEncuesta(encuesta: Encuesta) {
+    if (!encuesta.id) {
+      this.notificationService.show('No se puede eliminar: ID no encontrado', 'error');
+      return;
+    }
+
+    if (confirm('¿Estas seguro de eliminar la encuesta de ' + encuesta.clienteNombre + '? Esta accion no se puede deshacer.')) {
+      this.encuestaService.eliminarEncuesta(encuesta.id).subscribe({
+        next: () => {
+          this.notificationService.show('Encuesta de ' + encuesta.clienteNombre + ' eliminada correctamente', 'success');
+          this.cargarEncuestas();
+        },
+        error: (error) => {
+          console.error('Error al eliminar:', error);
+          this.notificationService.show('Error al eliminar la encuesta', 'error');
+        }
+      });
+    }
+  }
+
+  exportarExcel() {
+    if (this.encuestasFiltradas.length === 0) {
+      this.notificationService.show('No hay encuestas para exportar', 'warning');
+      return;
+    }
+
+    const data = this.encuestasFiltradas.map(e => ({
+      'Cliente': e.clienteNombre,
+      'Email': e.clienteEmail,
+      'Marca': e.marcaNombre,
+      'Estado': this.getEstadoTexto(e.estado),
+      'Fecha Envio': e.fechaEnvio ? new Date(e.fechaEnvio).toLocaleString('es-MX') : '',
+      'Fecha Respuesta': e.fechaRespuesta ? new Date(e.fechaRespuesta).toLocaleString('es-MX') : '',
+      'Token': e.token,
+      'Link': this.generarLink(e.token)
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Encuestas');
+    
+    const colWidths = [
+      { wch: 35 },
+      { wch: 30 },
+      { wch: 25 },
+      { wch: 12 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 40 },
+      { wch: 50 }
+    ];
+    ws['!cols'] = colWidths;
+
+    const fileName = 'encuestas_' + new Date().toISOString().split('T')[0] + '.xlsx';
+    XLSX.writeFile(wb, fileName);
+    
+    this.notificationService.show('Encuestas exportadas correctamente', 'success');
+  }
+
   getEstadoClass(estado: string): string {
-    const classes = {
+    const classes: { [key: string]: string } = {
       'ENVIADA': 'badge-enviada',
       'RESPONDIDA': 'badge-respondida',
       'EXPIRADA': 'badge-expirada'
     };
-    return classes[estado as keyof typeof classes] || '';
+    return classes[estado] || '';
   }
 
   getEstadoTexto(estado: string): string {
-    const textos = {
+    const textos: { [key: string]: string } = {
       'ENVIADA': 'Enviada',
       'RESPONDIDA': 'Respondida',
       'EXPIRADA': 'Expirada'
     };
-    return textos[estado as keyof typeof textos] || estado;
+    return textos[estado] || estado;
   }
 
   formatFecha(fecha: Date | string): string {
@@ -98,7 +160,7 @@ export class ListarEncuestasComponent implements OnInit {
     const anio = d.getFullYear();
     const horas = String(d.getHours()).padStart(2, '0');
     const minutos = String(d.getMinutes()).padStart(2, '0');
-    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+    return dia + '/' + mes + '/' + anio + ' ' + horas + ':' + minutos;
   }
 
   generarLink(token: string): string {
@@ -108,7 +170,7 @@ export class ListarEncuestasComponent implements OnInit {
   copiarLink(token: string, clienteNombre: string) {
     const link = this.generarLink(token);
     navigator.clipboard.writeText(link).then(() => {
-      alert('Link copiado al portapapeles para ' + clienteNombre + '\n\n' + link);
+      this.notificationService.show('Link copiado para ' + clienteNombre, 'success');
     }).catch(() => {
       prompt('Copia el link para ' + clienteNombre + ':', link);
     });

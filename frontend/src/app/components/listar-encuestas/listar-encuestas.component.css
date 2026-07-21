@@ -44,6 +44,7 @@
 .header-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .btn-refresh {
@@ -56,10 +57,31 @@
   transition: all 0.3s;
   background: #f8f9fa;
   color: #555;
+  font-family: 'Inter', 'Montserrat', sans-serif;
 }
 
 .btn-refresh:hover {
   background: #e9ecef;
+}
+
+.btn-export {
+  padding: 8px 20px;
+  border: 1px solid #2E7D32;
+  border-radius: 8px;
+  background: white;
+  color: #2E7D32;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Inter', 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+}
+
+.btn-export:hover {
+  background: #2E7D32;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
 .filtros-container {
@@ -253,6 +275,18 @@
   color: white;
 }
 
+.btn-eliminar {
+  background: #FFEBEE;
+  border: 1px solid #C62828;
+  color: #C62828;
+}
+
+.btn-eliminar:hover {
+  background: #C62828;
+  color: white;
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+}
+
 .cargando {
   text-align: center;
   color: #999;
@@ -286,7 +320,6 @@
   font-size: 0.9rem;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -437,10 +470,12 @@
 
   .header-actions {
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .header-actions button {
     flex: 1;
+    min-width: 120px;
   }
 
   .filtros-box {
@@ -473,6 +508,10 @@
   .btn-sm {
     width: 100%;
     text-align: center;
+  }
+
+  .modal-card {
+    padding: 20px 16px;
   }
 }
 

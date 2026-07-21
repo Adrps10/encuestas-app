@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  title = 'encuestas-app';
+
   constructor(private router: Router) {}
 
   isPublicRoute(): boolean {
@@ -22,7 +24,6 @@ export class AppComponent {
   onLogoError(event: Event) {
     const img = event.target as HTMLImageElement;
     img.style.display = 'none';
-    // Mostrar texto alternativo si la imagen falla
     const parent = img.parentElement;
     if (parent) {
       const text = document.createElement('span');

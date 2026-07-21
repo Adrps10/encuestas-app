@@ -1,0 +1,171 @@
+<div class="contestar-container">
+  <div class="page-header">
+    <h1>Contestar Encuesta Manual</h1>
+    <p>Busque al cliente y complete la encuesta manualmente</p>
+  </div>
+
+  <div class="form-container">
+    <div class="step-section" [class.completed]="clienteEncontrado">
+      <div class="step-header">
+        <span class="step-number">1</span>
+        <h3>Buscar Cliente</h3>
+      </div>
+      <form [formGroup]="searchForm" (ngSubmit)="buscarEncuesta()">
+        <div class="search-row">
+          <div class="form-group">
+            <label>Nombre del Cliente <span class="required">*</span></label>
+            <input type="text" formControlName="nombreCliente" placeholder="Ingrese nombre del cliente">
+            <small *ngIf="searchForm.get('nombreCliente')?.invalid && searchForm.get('nombreCliente')?.touched" class="error-text">
+              Ingrese al menos 3 caracteres
+            </small>
+          </div>
+          <button type="submit" class="btn-search" [disabled]="loading || searchForm.invalid">
+            {{ loading ? 'Buscando...' : 'Buscar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="clienteEncontrado && encuestaEncontrada" class="step-section completed">
+      <div class="step-header">
+        <span class="step-number">2</span>
+        <h3>Cliente Encontrado</h3>
+      </div>
+      <div class="cliente-info">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Cliente:</span>
+            <span class="value">{{ encuestaEncontrada.clienteNombre }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ encuestaEncontrada.clienteEmail || 'No registrado' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Marca:</span>
+            <span class="value">{{ encuestaEncontrada.marcaNombre }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Tipo:</span>
+            <span class="value">{{ encuestaEncontrada.tipo }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Fecha Envio:</span>
+            <span class="value">{{ encuestaEncontrada.fechaEnvio | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="clienteEncontrado && encuestaEncontrada" class="step-section">
+      <div class="step-header">
+        <span class="step-number">3</span>
+        <h3>Contestar Encuesta</h3>
+      </div>
+
+      <form [formGroup]="encuestaForm" (ngSubmit)="enviarEncuesta()">
+        <div class="pregunta-card">
+          <label class="pregunta-label">
+            1. Como evaluaria su experiencia con la agencia?
+            <span class="required">*</span>
+          </label>
+          <div class="calificacion-options">
+            <div *ngFor="let valor of [1,2,3,4,5]" class="option-star">
+              <input 
+                type="radio" 
+                [value]="valor" 
+                formControlName="experienciaAgencia"
+                [id]="'exp' + valor"
+              >
+              <label [for]="'exp' + valor">
+                <span class="star">{{ valor }} ★</span>
+                <span class="label-text">{{ getCalificacionText(valor) }}</span>
+              </label>
+            </div>
+          </div>
+          <small *ngIf="encuestaForm.get('experienciaAgencia')?.hasError('required') && encuestaForm.get('experienciaAgencia')?.touched" class="error-text">
+            Seleccione una calificacion
+          </small>
+        </div>
+
+        <div class="pregunta-card">
+          <label class="pregunta-label">
+            2. Como calificaria su experiencia con el asesor de servicio?
+            <span class="required">*</span>
+          </label>
+          <div class="calificacion-options">
+            <div *ngFor="let valor of [1,2,3,4,5]" class="option-star">
+              <input 
+                type="radio" 
+                [value]="valor" 
+                formControlName="experienciaAsesor"
+                [id]="'ase' + valor"
+              >
+              <label [for]="'ase' + valor">
+                <span class="star">{{ valor }} ★</span>
+                <span class="label-text">{{ getCalificacionText(valor) }}</span>
+              </label>
+            </div>
+          </div>
+          <small *ngIf="encuestaForm.get('experienciaAsesor')?.hasError('required') && encuestaForm.get('experienciaAsesor')?.touched" class="error-text">
+            Seleccione una calificacion
+          </small>
+        </div>
+
+        <div class="pregunta-card">
+          <label class="pregunta-label">
+            3. Recomendaria nuestro servicio?
+            <span class="required">*</span>
+          </label>
+          <div class="si-no-options">
+            <div class="option-si-no">
+              <input 
+                type="radio" 
+                value="SI" 
+                formControlName="recomendacion"
+                id="recomendacionSI"
+              >
+              <label for="recomendacionSI">SI</label>
+            </div>
+            <div class="option-si-no">
+              <input 
+                type="radio" 
+                value="NO" 
+                formControlName="recomendacion"
+                id="recomendacionNO"
+              >
+              <label for="recomendacionNO">NO</label>
+            </div>
+          </div>
+          <small *ngIf="encuestaForm.get('recomendacion')?.hasError('required') && encuestaForm.get('recomendacion')?.touched" class="error-text">
+            Seleccione una opcion
+          </small>
+        </div>
+
+        <div class="pregunta-card">
+          <label class="pregunta-label">
+            4. Que podriamos mejorar durante su estancia?
+          </label>
+          <textarea 
+            formControlName="comentario" 
+            rows="4" 
+            placeholder="Escriba su respuesta..."
+            class="textarea-comentario"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="limpiar()">Limpiar</button>
+          <button type="submit" class="btn-primary" [disabled]="enviando || encuestaForm.invalid">
+            {{ enviando ? 'Enviando...' : 'Enviar Respuesta' }}
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="exito" class="success-message">
+        <span class="success-icon">✔</span>
+        <span>Encuesta contestada exitosamente</span>
+      </div>
+    </div>
+  </div>
+</div>

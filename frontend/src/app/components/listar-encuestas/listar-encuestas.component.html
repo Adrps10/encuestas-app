@@ -6,6 +6,7 @@
     </div>
     <div class="header-actions">
       <button class="btn-refresh" (click)="cargarEncuestas()">Actualizar</button>
+      <button class="btn-export" (click)="exportarExcel()">Exportar Excel</button>
     </div>
   </div>
 
@@ -73,6 +74,7 @@
               <div class="btn-actions">
                 <button class="btn-sm btn-ver" (click)="verDetalles(encuesta)">Ver</button>
                 <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)">Copiar</button>
+                <button class="btn-sm btn-eliminar" (click)="eliminarEncuesta(encuesta)">Eliminar</button>
               </div>
             </td>
           </tr>
@@ -91,7 +93,6 @@
   </div>
 </div>
 
-<!-- Modal de detalles -->
 <div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-head">

@@ -5,7 +5,6 @@
 <ng-container *ngIf="!isPublicRoute()">
   <nav class="navbar navbar-expand-lg shadow-sm" style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%); border-bottom: 3px solid #C62828; padding: 12px 24px;">
     <div class="container-fluid">
-      <!-- Logo Team InMotion - Solo imagen -->
       <div class="navbar-brand" style="cursor: default; padding: 0;">
         <img 
           src="assets/inmo1.webp" 
@@ -15,8 +14,6 @@
           (error)="onLogoError($event)"
         >
       </div>
-
-      <!-- Botón Cerrar Sesión -->
       <button class="btn btn-logout" (click)="logout()">
         <span class="logout-icon">⏻</span>
         <span class="logout-text">Cerrar Sesión</span>
@@ -28,13 +25,19 @@
     <div class="bg-white vh-100 p-3 shadow-sm" style="width: 220px; border-right: 1px solid #ddd;">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active fw-bold text-danger">Dashboard</a>
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active fw-bold text-danger">Inicio</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/crear" routerLinkActive="active fw-bold text-danger">Crear Encuesta</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/listar" routerLinkActive="active fw-bold text-danger">Listar Encuestas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/importar" routerLinkActive="active fw-bold text-danger">Importar Datos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contestar-manual" routerLinkActive="active fw-bold text-danger">Contestar Manual</a>
         </li>
       </ul>
     </div>

@@ -1,16 +1,47 @@
 <div class="dashboard-container">
-  <!-- Header -->
+  <app-toast></app-toast>
+
   <div class="dashboard-header">
     <div>
-      <h1>Dashboard</h1>
+      <h1>InMotion</h1>
       <p>Control de encuestas y estadisticas</p>
     </div>
     <div class="header-actions">
       <button class="btn-refresh" (click)="refrescarDatos()">Actualizar</button>
+      <button class="btn-export" (click)="exportarEstadisticas()">Exportar Excel</button>
     </div>
   </div>
 
-  <!-- Stats Generales -->
+  <div class="filtros-container">
+    <span class="filtros-label">Periodo:</span>
+    <div class="filtros-buttons">
+      <button 
+        (click)="filtrarPorPeriodo('hoy')" 
+        [class.active]="periodo === 'hoy'" 
+        class="btn-filtro">
+        Hoy
+      </button>
+      <button 
+        (click)="filtrarPorPeriodo('semana')" 
+        [class.active]="periodo === 'semana'" 
+        class="btn-filtro">
+        Semana
+      </button>
+      <button 
+        (click)="filtrarPorPeriodo('mes')" 
+        [class.active]="periodo === 'mes'" 
+        class="btn-filtro">
+        Mes
+      </button>
+      <button 
+        (click)="filtrarPorPeriodo('todos')" 
+        [class.active]="periodo === 'todos'" 
+        class="btn-filtro active">
+        Todos
+      </button>
+    </div>
+  </div>
+
   <div class="stats-grid">
     <div class="stat-card total">
       <h3>Total Encuestas</h3>
@@ -26,56 +57,67 @@
     </div>
     <div class="stat-card tasa">
       <h3>Tasa Respuesta</h3>
-      <p class="stat-number">{{ estadisticas.tasaRespuesta.toFixed(0) }}%</p>
+      <p class="stat-number">{{ estadisticas.tasaRespuesta }}%</p>
     </div>
   </div>
 
-  <!-- Stats por Marca -->
+  <div class="graficos-container">
+    <div class="grafico-card">
+      <h3 class="grafico-title">Encuestas por Marca</h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoMarcas></canvas>
+      </div>
+    </div>
+    <div class="grafico-card">
+      <h3 class="grafico-title">Evolucion (ultimos 7 dias)</h3>
+      <div class="grafico-wrapper">
+        <canvas #graficoEvolucion></canvas>
+      </div>
+    </div>
+  </div>
+
   <div class="marcas-stats">
     <h2 class="marcas-title">Estadisticas por Marca</h2>
     <div class="marcas-grid">
-      <div *ngFor="let marca of marcas" class="marca-stat-card">
-        <!-- Logo de la marca -->
+      <div *ngFor="let marca of (marcasFiltradas.length > 0 ? marcasFiltradas : marcas)" class="marca-stat-card">
         <div class="marca-logo">
           <img 
             [src]="'assets/logos/' + obtenerLogo(marca.id)" 
             [alt]="marca.nombre"
+            [attr.data-marca-id]="marca.id"
+            (error)="onImageError($event)"
             class="marca-logo-img"
-            onerror="this.src='assets/logos/default.svg'; this.onerror=null;"
           >
           <span class="marca-nombre">{{ marca.nombre }}</span>
         </div>
         
-        <!-- Estadísticas -->
         <div class="marca-stats-detalle">
           <div class="stat-item">
             <span class="stat-label">Total</span>
-            <span class="stat-value">{{ getTotalPorMarca(marca.id) }}</span>
+            <span class="stat-value">{{ marca.total }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Respondidas</span>
-            <span class="stat-value respondidas">{{ getRespondidasPorMarca(marca.id) }}</span>
+            <span class="stat-value respondidas">{{ marca.respondidas }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Pendientes</span>
-            <span class="stat-value pendientes">{{ getPendientesPorMarca(marca.id) }}</span>
+            <span class="stat-value pendientes">{{ marca.pendientes }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Promedio</span>
-            <span class="stat-value promedio">{{ getPromedioPorMarca(marca.id).toFixed(1) }}</span>
+            <span class="stat-value promedio">{{ marca.promedio }}</span>
           </div>
         </div>
         
-        <!-- Barra de porcentaje -->
         <div class="marca-bar">
-          <div class="barra" [style.width.%]="getTasaPorMarca(marca.id)"></div>
-          <span class="barra-label">{{ getTasaPorMarca(marca.id).toFixed(0) }}%</span>
+          <div class="barra" [style.width.%]="marca.tasaRespuesta"></div>
+          <span class="barra-label">{{ marca.tasaRespuesta }}%</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Encuestas Recientes -->
   <div class="encuestas-recientes">
     <h2 class="marcas-title">Ultimas Encuestas</h2>
     <div class="table-responsive">
@@ -91,7 +133,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- ✅ Usar encuestasRecientes en lugar de encuestas -->
           <tr *ngFor="let encuesta of encuestasRecientes">
             <td>
               <div class="cliente-info">
@@ -108,14 +149,16 @@
             <td>{{ formatFecha(encuesta.fechaEnvio) }}</td>
             <td>
               <span *ngIf="encuesta.estado === 'RESPONDIDA'" class="calificacion">
-                {{ getPromedioEncuesta(encuesta).toFixed(1) }}
+                {{ getPromedioEncuesta(encuesta) }}
               </span>
               <span *ngIf="encuesta.estado !== 'RESPONDIDA'">-</span>
             </td>
             <td>
               <div class="btn-actions">
                 <button class="btn-sm btn-ver" (click)="verDetalles(encuesta)">Ver</button>
-                <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token)">Copiar</button>
+                <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token)" [disabled]="copiando">
+                  {{ copiando ? 'Copiando...' : 'Copiar' }}
+                </button>
               </div>
             </td>
           </tr>
@@ -128,7 +171,6 @@
   </div>
 </div>
 
-<!-- Modal -->
 <div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-head">
@@ -136,11 +178,21 @@
       <button class="modal-close" (click)="cerrarDetalles()">X</button>
     </div>
     <div class="modal-body" *ngIf="encuestaSeleccionada">
-      <div class="detail-row"><b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}</div>
-      <div class="detail-row"><b>Email:</b> {{ encuestaSeleccionada.clienteEmail }}</div>
-      <div class="detail-row"><b>Marca:</b> {{ encuestaSeleccionada.marcaNombre }}</div>
-      <div class="detail-row"><b>Estado:</b> {{ getEstadoTexto(encuestaSeleccionada.estado) }}</div>
-      <div class="detail-row"><b>Fecha:</b> {{ formatFecha(encuestaSeleccionada.fechaEnvio) }}</div>
+      <div class="detail-row">
+        <b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}
+      </div>
+      <div class="detail-row">
+        <b>Email:</b> {{ encuestaSeleccionada.clienteEmail }}
+      </div>
+      <div class="detail-row">
+        <b>Marca:</b> {{ encuestaSeleccionada.marcaNombre }}
+      </div>
+      <div class="detail-row">
+        <b>Estado:</b> {{ getEstadoTexto(encuestaSeleccionada.estado) }}
+      </div>
+      <div class="detail-row">
+        <b>Fecha:</b> {{ formatFecha(encuestaSeleccionada.fechaEnvio) }}
+      </div>
       <div class="detail-row">
         <b>Link:</b>
         <div class="link-box">
