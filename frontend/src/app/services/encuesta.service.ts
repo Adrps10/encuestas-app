@@ -61,7 +61,9 @@ export class EncuestaService {
   }
 
   generarLinkEncuesta(token: string): string {
-    return `${this.frontendUrl}/responder/${token}`;
+  // Usar la URL de Railway para producción
+    const frontendUrl = 'https://inmotion-frontend.up.railway.app';
+    return `${frontendUrl}/responder/${token}`;
   }
 
   obtenerEncuestaPorToken(token: string): Observable<Encuesta> {

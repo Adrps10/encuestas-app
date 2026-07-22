@@ -12,7 +12,7 @@
     <div class="upload-box" (dragover)="$event.preventDefault()" (drop)="onFileChange($event)">
       <div class="upload-icon">📄</div>
       <h3>Seleccione el archivo Excel</h3>
-      <p>El archivo debe contener las columnas: FECHA, NOMBRE CLIENTE, ASESOR, TELEFONO, UNIDAD,MARCA</p>
+      <p>El archivo debe contener las columnas: FECHA, NOMBRE CLIENTE, ASESOR, TELEFONO, UNIDAD, MARCA</p>
       <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput>
     </div>
 
@@ -128,6 +128,9 @@
               <tr *ngIf="item.mostrarPlantilla">
                 <td colspan="5">
                   <div class="plantilla-box">
+                    <div class="plantilla-imagen" *ngIf="item.imagenUrl">
+                      <img [src]="item.imagenUrl" [alt]="item.marca" class="banner-imagen">
+                    </div>
                     <textarea readonly rows="12" class="plantilla-textarea">{{ item.plantilla }}</textarea>
                   </div>
                 </td>

@@ -39,6 +39,33 @@ export class ImportarEncuestasComponent {
     'Compro Pachuca': 7
   };
 
+  imagenesMarca: { [key: string]: string } = {
+    'Subaru': 'assets/whatsapp/subaruPachuca.png',
+    'Toyota Pachuca': 'assets/whatsapp/toyotaPachuca.jpeg',
+    'Toyota Tulancingo': 'assets/whatsapp/toyotaTulancingo.jpeg',
+    'Carsline Pachuca': 'assets/whatsapp/carsline.png',
+    'Carsline Queretaro': 'assets/whatsapp/carsline.png',
+    'Carsline Querétaro': 'assets/whatsapp/carsline.png',
+    'GMW': 'assets/whatsapp/comproCars.png',
+    'GWM Queretaro': 'assets/whatsapp/comproCars.png',
+    'GWM Querétaro': 'assets/whatsapp/comproCars.png',
+    'CompraCars Pachuca': 'assets/whatsapp/comproCars.png',
+    'CompraCars Querétaro': 'assets/whatsapp/comproCars.png',
+    'ComproCars Queretaro': 'assets/whatsapp/comproCars.png',
+    'ComproCars Querétaro': 'assets/whatsapp/comproCars.png',
+    'Compro Pachuca': 'assets/whatsapp/comproCars.png'
+  };
+
+  emojis = {
+    manosArriba: '🙌🏽',
+    auto: '🚗',
+    herramienta: '🧰',
+    gracias: '☺️',
+    bienvenida: '🙌🏽',
+    estrella: '⭐',
+    punto: '👉'
+  };
+
   constructor(private encuestaService: EncuestaService) {}
 
   onFileChange(event: any) {
@@ -173,6 +200,32 @@ export class ImportarEncuestasComponent {
     return 5;
   }
 
+  obtenerImagenMarca(nombreMarca: string): string {
+    if (!nombreMarca) return 'assets/whatsapp/subaruPachuca.png';
+    
+    if (this.imagenesMarca[nombreMarca]) {
+      return this.imagenesMarca[nombreMarca];
+    }
+    
+    for (const key of Object.keys(this.imagenesMarca)) {
+      if (nombreMarca.toLowerCase().includes(key.toLowerCase()) || 
+          key.toLowerCase().includes(nombreMarca.toLowerCase())) {
+        return this.imagenesMarca[key];
+      }
+    }
+    
+    return 'assets/whatsapp/subaruPachuca.png';
+  }
+
+  obtenerUrlImagen(marcaNombre: string): string {
+    const imagenPath = this.obtenerImagenMarca(marcaNombre);
+    // Para producción en Railway
+    const baseUrl = 'https://inmotion-frontend.up.railway.app';
+    // Para desarrollo local:
+    // const baseUrl = 'http://localhost:80';
+    return baseUrl + '/' + imagenPath;
+  }
+
   convertirFecha(valor: any): string {
     if (!valor) return '';
     
@@ -256,29 +309,32 @@ export class ImportarEncuestasComponent {
     const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
     const nombreMarca = cliente.marcaNombre || 'Subaru';
     const modeloAuto = cliente.unidad || 'su vehiculo';
-    
     const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
+    
+    const imagenUrl = this.obtenerUrlImagen(nombreMarca);
 
     let plantilla = '';
 
+    plantilla = imagenUrl + '\n\n';
+
     if (this.tipoPlantilla === 'VENTA') {
-      plantilla = 'Buen dia, Sr./Srita. ' + nombreCliente + '.\n\n';
-      plantilla += 'Mi nombre es ' + nombreAsesor + ' y formo parte del area de Satisfaccion a Clientes de ' + nombreMarca + '.\n\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindo al visitarnos. Fue un placer atenderle y acompanarle durante la adquisicion de su ' + modeloAuto + '.\n\n';
-      plantilla += 'Nos gustaria conocer su opinion sobre la atencion recibida tanto por parte de nuestra agencia como de su asesor ' + nombreAsesor + '. Por ello, le invitamos a responder nuestra encuesta de satisfaccion, la cual le tomara solo unos minutos.\n\n';
+      plantilla += 'Buen dia, Sr./Srita. *' + nombreCliente + '*.\n';
+      plantilla += 'Mi nombre es *' + nombreAsesor + '* y formo parte del area de Satisfaccion a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
+      plantilla += 'Agradecemos sinceramente el tiempo que nos brindo al visitarnos. Fue un placer atenderle y acompanarle durante la adquisicion de su *' + modeloAuto + '*.\n';
+      plantilla += 'Nos gustaria conocer su opinion sobre la atencion recibida tanto por parte de nuestra agencia como de su asesor *' + nombreAsesor + '*. Por ello, le invitamos a responder nuestra encuesta de satisfaccion, la cual le tomara solo unos minutos.\n';
       plantilla += 'Para participar, por favor haga clic en el siguiente enlace:\n';
-      plantilla += link + '\n\n';
+      plantilla += this.emojis.punto + ' ' + link + '\n';
       plantilla += 'Muchas gracias por su tiempo y confianza.\n';
-      plantilla += '¡Le damos la mas cordial bienvenida a la familia ' + nombreMarca + '!';
+      plantilla += '¡Le damos la mas cordial bienvenida a la familia *' + nombreMarca + '*! ' + this.emojis.bienvenida + ' ' + this.emojis.auto;
     } else {
-      plantilla = 'Buen dia, Sr./Srita. ' + nombreCliente + '.\n\n';
-      plantilla += 'Mi nombre es ' + nombreAsesor + ' de Satisfaccion a Clientes de ' + nombreMarca + '.\n\n';
-      plantilla += 'Agradecemos sinceramente el tiempo que nos brindo al visitarnos en nuestra agencia, fue un gusto atenderle y acompanarle durante su estancia.\n\n';
-      plantilla += 'Nos gustaria conocer su opinion respecto al servicio realizado a su ' + modeloAuto + ' el dia ' + fechaVisita + '.\n\n';
+      plantilla += 'Buen dia, Sr./Srita. *' + nombreCliente + '*.\n';
+      plantilla += 'Mi nombre es *' + nombreAsesor + '* de Satisfaccion a Clientes de *' + nombreMarca + '* ' + this.emojis.manosArriba + '.\n';
+      plantilla += 'Agradecemos sinceramente el tiempo que nos brindo al visitarnos en nuestra agencia, fue un gusto atenderle y acompanarle durante su estancia.\n';
+      plantilla += 'Nos gustaria conocer su opinion respecto al servicio realizado a su *' + modeloAuto + '* el dia *' + fechaVisita + '* ' + this.emojis.auto + this.emojis.herramienta + '.\n';
       plantilla += 'Lo invitamos a responder nuestra encuesta de satisfaccion; le tomara solo unos minutos.\n\n';
       plantilla += 'Por favor, haz clic en el siguiente enlace para participar:\n';
-      plantilla += link + '\n\n';
-      plantilla += '¡Muchas gracias por su tiempo!';
+      plantilla += this.emojis.punto + ' ' + link + '\n';
+      plantilla += '¡Muchas gracias por su tiempo! ' + this.emojis.gracias + ' ' + this.emojis.auto;
     }
 
     return plantilla;
@@ -341,7 +397,8 @@ export class ImportarEncuestasComponent {
               token: response.token,
               link: link,
               plantilla: plantillaCompleta,
-              mostrarPlantilla: false
+              mostrarPlantilla: false,
+              imagenUrl: this.obtenerUrlImagen(cliente.marcaNombre || 'Subaru')
             });
             completados++;
             if (completados === pendientes.length) {
