@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "buildCommand": "npm run build:prod",
+  "outputDirectory": "dist/encuestas-app",
+  "installCommand": "npm install",
+  "framework": "angular",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
