@@ -75,6 +75,7 @@
                 <button class="btn-sm btn-ver" (click)="verDetalles(encuesta)">Ver</button>
                 <button class="btn-sm btn-copiar" (click)="copiarLink(encuesta.token, encuesta.clienteNombre)">Copiar</button>
                 <button class="btn-sm btn-eliminar" (click)="eliminarEncuesta(encuesta)">Eliminar</button>
+                <button class="btn-sm btn-plantilla" (click)="verPlantilla(encuesta)">Plantilla</button>
               </div>
             </td>
           </tr>
@@ -93,6 +94,7 @@
   </div>
 </div>
 
+<!-- Modal de Detalles -->
 <div class="modal-overlay" *ngIf="mostrarDetalles" (click)="cerrarDetalles()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-head">
@@ -127,6 +129,40 @@
       </div>
       <div class="respuestas-box" *ngIf="!encuestaSeleccionada.respuestas || encuestaSeleccionada.respuestas.length === 0">
         <p style="color: #999; text-align: center;">Esta encuesta aun no ha sido respondida</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Plantilla -->
+<div class="modal-overlay" *ngIf="mostrarPlantilla" (click)="cerrarPlantilla()">
+  <div class="modal-card plantilla-modal" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Plantilla de WhatsApp</h3>
+      <button class="modal-close" (click)="cerrarPlantilla()">X</button>
+    </div>
+    <div class="modal-body" *ngIf="encuestaSeleccionada">
+      <div class="detail-row">
+        <b>Cliente:</b> {{ encuestaSeleccionada.clienteNombre }}
+      </div>
+      <div class="detail-row">
+        <b>Marca:</b> {{ encuestaSeleccionada.marcaNombre }}
+      </div>
+      <div class="detail-row">
+        <b>Link:</b>
+        <div class="link-box">
+          <input type="text" [value]="generarLink(encuestaSeleccionada.token)" readonly>
+          <button class="btn-copy-modal" (click)="copiarLink(encuestaSeleccionada.token, encuestaSeleccionada.clienteNombre)">Copiar</button>
+        </div>
+      </div>
+      <div class="plantilla-box">
+        <div class="plantilla-imagen" *ngIf="imagenUrl">
+          <img [src]="imagenUrl" [alt]="encuestaSeleccionada.marcaNombre" class="banner-imagen">
+        </div>
+        <textarea readonly rows="14" class="plantilla-textarea">{{ plantillaActual }}</textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-copy-plantilla-modal" (click)="copiarPlantilla(plantillaActual)">Copiar Plantilla</button>
       </div>
     </div>
   </div>

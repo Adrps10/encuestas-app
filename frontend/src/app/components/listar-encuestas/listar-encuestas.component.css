@@ -529,4 +529,126 @@
   .cliente-info span {
     display: none;
   }
+  /* Agregar al final del archivo listar-encuestas.component.css */
+
+.btn-plantilla {
+  background: #E3F2FD;
+  border: 1px solid #1565C0;
+  color: #1565C0;
+}
+
+.btn-plantilla:hover {
+  background: #1565C0;
+  color: white;
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+}
+
+.plantilla-modal {
+  max-width: 650px !important;
+}
+
+.plantilla-box {
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 4px;
+  margin-top: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.plantilla-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  font-family: 'Inter', 'Montserrat', sans-serif;
+  background: #f8f9fa;
+  color: #1A1A1A;
+  resize: vertical;
+  min-height: 250px;
+}
+
+.plantilla-textarea:focus {
+  outline: none;
+}
+
+.plantilla-imagen {
+  margin-bottom: 10px;
+  text-align: center;
+  background: #f8f9fa;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.banner-imagen {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  object-fit: contain;
+  background: white;
+}
+
+.btn-copy-plantilla-modal {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #2E7D32, #43A047);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Inter', 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.btn-copy-plantilla-modal:hover {
+  background: linear-gradient(135deg, #1B5E20, #2E7D32);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .plantilla-modal {
+    max-width: 95% !important;
+  }
+  
+  .plantilla-textarea {
+    min-height: 200px;
+    font-size: 0.8rem;
+  }
+  
+  .banner-imagen {
+    max-height: 80px;
+  }
+  
+  .btn-copy-plantilla-modal {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .plantilla-textarea {
+    min-height: 150px;
+    font-size: 0.75rem;
+    padding: 10px 12px;
+  }
+  
+  .banner-imagen {
+    max-height: 60px;
+  }
+}
 }

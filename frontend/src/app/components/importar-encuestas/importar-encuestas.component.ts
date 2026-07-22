@@ -26,6 +26,7 @@ export class ImportarEncuestasComponent {
   marcasMap: { [key: string]: number } = {
     'Subaru': 5,
     'Toyota Pachuca': 1,
+    'Toyota Tulancingo': 1,
     'Carsline Pachuca': 2,
     'Carsline Queretaro': 3,
     'Carsline Querétaro': 3,
@@ -217,12 +218,15 @@ export class ImportarEncuestasComponent {
     return 'assets/whatsapp/subaruPachuca.png';
   }
 
+  // ✅ CORREGIDO: URL base para Vercel
   obtenerUrlImagen(marcaNombre: string): string {
     const imagenPath = this.obtenerImagenMarca(marcaNombre);
-    // Para producción en Railway
-    const baseUrl = 'https://inmotion-frontend.up.railway.app';
+    // Para producción en Vercel
+    const baseUrl = 'https://encuestas-app.vercel.app';
     // Para desarrollo local:
-    // const baseUrl = 'http://localhost:80';
+    // const baseUrl = 'http://localhost:4200';
+    // Para Railway (si usas Railway para el frontend):
+    // const baseUrl = 'https://inmotion-frontend.up.railway.app';
     return baseUrl + '/' + imagenPath;
   }
 
