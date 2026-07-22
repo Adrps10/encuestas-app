@@ -13,7 +13,7 @@ export class EncuestaService {
   // private apiUrl = 'http://localhost:8086/api/encuestas';
 
   // ✅ CORREGIDO: Frontend en Vercel
-  private frontendUrl = 'https://encuestas-app.vercel.app';
+  private frontendUrl = 'https://encuestas-app-rho.vercel.app';
   // Para desarrollo local:
   // private frontendUrl = 'http://localhost:4200';
 
