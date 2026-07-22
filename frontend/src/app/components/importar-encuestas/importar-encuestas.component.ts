@@ -221,12 +221,7 @@ export class ImportarEncuestasComponent {
   // ✅ CORREGIDO: URL base para Vercel
   obtenerUrlImagen(marcaNombre: string): string {
     const imagenPath = this.obtenerImagenMarca(marcaNombre);
-    // Para producción en Vercel
     const baseUrl = 'https://encuestas-app.vercel.app';
-    // Para desarrollo local:
-    // const baseUrl = 'http://localhost:4200';
-    // Para Railway (si usas Railway para el frontend):
-    // const baseUrl = 'https://inmotion-frontend.up.railway.app';
     return baseUrl + '/' + imagenPath;
   }
 
@@ -308,18 +303,15 @@ export class ImportarEncuestasComponent {
     return fechaStr || 'fecha de visita';
   }
 
+  // ✅ CORREGIDO: Plantilla sin URL de imagen al inicio
   generarPlantilla(cliente: any, link: string): string {
     const nombreCliente = cliente.nombreCliente || 'Cliente';
     const nombreAsesor = cliente.asesor || 'Asesor de Servicio';
     const nombreMarca = cliente.marcaNombre || 'Subaru';
     const modeloAuto = cliente.unidad || 'su vehiculo';
     const fechaVisita = cliente.fecha ? this.formatearFecha(cliente.fecha) : 'fecha de visita';
-    
-    const imagenUrl = this.obtenerUrlImagen(nombreMarca);
 
     let plantilla = '';
-
-    plantilla = imagenUrl + '\n\n';
 
     if (this.tipoPlantilla === 'VENTA') {
       plantilla += 'Buen dia, Sr./Srita. *' + nombreCliente + '*.\n';

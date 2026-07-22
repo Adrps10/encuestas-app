@@ -7,8 +7,15 @@ import { Encuesta, EstadisticasGenerales, Pregunta } from '../models/encuesta.mo
   providedIn: 'root'
 })
 export class EncuestaService {
-  private apiUrl = 'http://localhost:8086/api/encuestas';
-  private frontendUrl = 'http://localhost:4200';
+  // ✅ CORREGIDO: Backend en Railway
+  private apiUrl = 'https://inmotion-backend.up.railway.app/api/encuestas';
+  // Para desarrollo local:
+  // private apiUrl = 'http://localhost:8086/api/encuestas';
+
+  // ✅ CORREGIDO: Frontend en Vercel
+  private frontendUrl = 'https://encuestas-app.vercel.app';
+  // Para desarrollo local:
+  // private frontendUrl = 'http://localhost:4200';
 
   logos: { [key: number]: string } = {
     1: 'Toyota.png',
@@ -60,10 +67,8 @@ export class EncuestaService {
     return this.http.get<any>(`${this.apiUrl}/estadisticas/generales`);
   }
 
-  generarLinkEncuesta(token: string): string {
-  // Usar la URL de Railway para producción
-    const frontendUrl = 'https://inmotion-frontend.up.railway.app';
-    return `${frontendUrl}/responder/${token}`;
+   generarLinkEncuesta(token: string): string {
+    return `${this.frontendUrl}/responder/${token}`;
   }
 
   obtenerEncuestaPorToken(token: string): Observable<Encuesta> {

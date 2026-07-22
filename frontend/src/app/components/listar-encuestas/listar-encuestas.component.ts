@@ -121,9 +121,10 @@ export class ListarEncuestasComponent implements OnInit {
     return 'assets/whatsapp/subaruPachuca.png';
   }
 
+  // ✅ CORREGIDO: URL base para Vercel
   obtenerUrlImagen(marcaNombre: string): string {
     const imagenPath = this.obtenerImagenMarca(marcaNombre);
-    const baseUrl = 'https://inmotion-frontend.up.railway.app';
+    const baseUrl = 'https://encuestas-app.vercel.app';
     return baseUrl + '/' + imagenPath;
   }
 
@@ -140,20 +141,18 @@ export class ListarEncuestasComponent implements OnInit {
     return fechaStr || 'fecha de visita';
   }
 
+  // ✅ CORREGIDO: Plantilla sin URL de imagen al inicio
   generarPlantilla(encuesta: Encuesta): string {
     const nombreCliente = encuesta.clienteNombre || 'Cliente';
     const nombreMarca = encuesta.marcaNombre || 'Subaru';
     const link = this.generarLink(encuesta.token);
     
-    // Obtener datos adicionales si están disponibles
     let asesor = 'Asesor de Servicio';
     let modeloAuto = 'su vehiculo';
     let fechaVisita = 'fecha de visita';
     let tipoEncuesta = 'POSTVENTA';
 
-    // Si hay respuestas, intentar extraer información
     if (encuesta.respuestas && encuesta.respuestas.length > 0) {
-      // Buscar información en las respuestas
       for (const respuesta of encuesta.respuestas) {
         if (respuesta.preguntaTexto && respuesta.preguntaTexto.includes('Nombre')) {
           // Ya tenemos el nombre del cliente
@@ -161,11 +160,7 @@ export class ListarEncuestasComponent implements OnInit {
       }
     }
 
-    const imagenUrl = this.obtenerUrlImagen(nombreMarca);
-
     let plantilla = '';
-
-    plantilla = imagenUrl + '\n\n';
 
     if (tipoEncuesta === 'VENTA') {
       plantilla += 'Buen dia, Sr./Srita. *' + nombreCliente + '*.\n';
