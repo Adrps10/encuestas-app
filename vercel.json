@@ -1,8 +1,10 @@
 {
+  "rootDirectory": "frontend",
   "buildCommand": "npm run build:prod",
   "outputDirectory": "dist/encuestas-app",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": "angular",
+  "nodeVersion": "18.x",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
