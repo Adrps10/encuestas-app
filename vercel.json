@@ -3,7 +3,6 @@
   "outputDirectory": "frontend/dist/encuestas-app",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "angular",
-  "nodeVersion": "18.x",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
